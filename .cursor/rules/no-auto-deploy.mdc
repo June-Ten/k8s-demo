@@ -1,0 +1,17 @@
+---
+description: 只改文件，不替用户构建、推送或部署
+alwaysApply: true
+---
+
+# 不要自动构建和部署
+
+只修改代码和清单。不要执行 `docker build`、`docker push`、`docker pull`、`kubectl apply`、`kubectl rollout`、`kubectl create secret`，也不要创建或更新集群里的 Secret。
+
+改完后把需要执行的命令按顺序列出来，由用户自己复制到终端运行。
+
+用户明确写出「帮我执行」「你来推送」「你来部署」时，才可以运行对应命令。
+
+```text
+❌ 改完镜像地址后直接 docker push，再 kubectl apply
+✅ 改完清单，然后给出 docker build、docker push、kubectl apply，停下来等用户执行
+```
