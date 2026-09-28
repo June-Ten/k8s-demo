@@ -6,7 +6,7 @@
 
 - `frontend`：Vue 3 + Vite，容器里用 Nginx 托管，并把 `/api` 反代到 `backend:8080`
 - `backend`：Spring Boot，JPA 写 MySQL，列表 JSON 写入 Redis
-- `k8s`：Namespace、ConfigMap、Secret、MySQL、Redis、后端 2 副本、前端 NodePort `30080`
+- `k8s`：Namespace、ConfigMap、Secret、MySQL、Redis、后端 2 副本、前端 LoadBalancer `8088`
 
 页面上的 Pod 名称来自 Downward API。多刷新几次，可以看到请求落到不同的后端副本。来源徽章在第一次读取后显示「Redis 缓存」，新增或删除会清掉缓存。
 
@@ -55,7 +55,7 @@ docker build -t k8s-demo/frontend:1.0.0 ./frontend
 kubectl apply -k k8s
 ```
 
-集群需要能拉到 `mysql:8.4`、`redis:7-alpine`、`busybox:1.36`，并且有默认 StorageClass（MySQL 使用 1Gi PVC）。
+基础镜像走 DaoCloud 镜像 `docker.m.daocloud.io`（MySQL、Redis、BusyBox、构建用的 Maven / JDK / Node / Nginx）。集群还需要有默认 StorageClass（MySQL 使用 1Gi PVC）。
 
 Minikube 先把构建指到集群里的 Docker：
 
@@ -74,7 +74,7 @@ kind load docker-image k8s-demo/backend:1.0.0
 kind load docker-image k8s-demo/frontend:1.0.0
 ```
 
-NodePort 是 `30080`。`k8s/ingress.yaml` 没有放进 Kustomize，需要 Ingress Controller 时再单独 apply，并把 `k8s-demo.local` 指到入口。
+前端 Service 类型是 LoadBalancer，本机打开 http://localhost:8088 。`k8s/ingress.yaml` 没有放进 Kustomize；这个集群也没有 Ingress Controller，应用它不会单独打开页面。
 
 ## 接口
 

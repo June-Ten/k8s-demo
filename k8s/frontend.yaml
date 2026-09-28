@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: k8s-demo/frontend:1.0.0
+          image: k8s-demo/frontend:1.0.2
           imagePullPolicy: IfNotPresent
           ports:
             - containerPort: 80
@@ -40,10 +40,9 @@ metadata:
   name: frontend
   namespace: k8s-demo
 spec:
-  type: NodePort
+  type: LoadBalancer
   selector:
     app: frontend
   ports:
-    - port: 80
+    - port: 8088
       targetPort: 80
-      nodePort: 30080
