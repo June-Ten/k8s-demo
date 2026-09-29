@@ -13,9 +13,12 @@ spec:
       labels:
         app: redis
     spec:
+      imagePullSecrets:
+        - name: aliyun-registry
       containers:
         - name: redis
-          image: docker.m.daocloud.io/library/redis:7-alpine
+          image: registry.cn-beijing.aliyuncs.com/docker-june/redis:7-alpine
+          imagePullPolicy: Always
           ports:
             - containerPort: 6379
           readinessProbe:

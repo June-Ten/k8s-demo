@@ -13,6 +13,8 @@ spec:
       labels:
         app: backend
     spec:
+      imagePullSecrets:
+        - name: aliyun-registry
       terminationGracePeriodSeconds: 30
       initContainers:
         - name: wait-for-mysql
@@ -23,8 +25,8 @@ spec:
           command: ["sh", "-c", "until nc -z redis 6379; do echo waiting for redis; sleep 2; done"]
       containers:
         - name: backend
-          image: k8s-demo/backend:1.0.2
-          imagePullPolicy: IfNotPresent
+          image: registry.cn-beijing.aliyuncs.com/docker-june/backend:1.0.2
+          imagePullPolicy: Always
           ports:
             - containerPort: 8080
           envFrom:

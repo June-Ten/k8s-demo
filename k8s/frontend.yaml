@@ -13,10 +13,12 @@ spec:
       labels:
         app: frontend
     spec:
+      imagePullSecrets:
+        - name: aliyun-registry
       containers:
         - name: frontend
-          image: k8s-demo/frontend:1.0.2
-          imagePullPolicy: IfNotPresent
+          image: registry.cn-beijing.aliyuncs.com/docker-june/frontend:1.0.2
+          imagePullPolicy: Always
           ports:
             - containerPort: 80
           readinessProbe:

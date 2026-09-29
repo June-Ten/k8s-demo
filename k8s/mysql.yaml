@@ -27,9 +27,12 @@ spec:
       labels:
         app: mysql
     spec:
+      imagePullSecrets:
+        - name: aliyun-registry
       containers:
         - name: mysql
-          image: docker.m.daocloud.io/library/mysql:8.4
+          image: registry.cn-beijing.aliyuncs.com/docker-june/mysql:8.4
+          imagePullPolicy: Always
           ports:
             - containerPort: 3306
           env:

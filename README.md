@@ -50,29 +50,28 @@ npm run dev
 镜像名要和清单一致：
 
 ```bash
-docker build -t k8s-demo/backend:1.0.0 ./backend
-docker build -t k8s-demo/frontend:1.0.0 ./frontend
+docker build -t registry.cn-beijing.aliyuncs.com/docker-june/backend:1.0.2 ./backend
+docker build -t registry.cn-beijing.aliyuncs.com/docker-june/frontend:1.0.2 ./frontend
+docker push registry.cn-beijing.aliyuncs.com/docker-june/backend:1.0.2
+docker push registry.cn-beijing.aliyuncs.com/docker-june/frontend:1.0.2
 kubectl apply -k k8s
 ```
 
-基础镜像走 DaoCloud 镜像 `docker.m.daocloud.io`（MySQL、Redis、BusyBox、构建用的 Maven / JDK / Node / Nginx）。集群还需要有默认 StorageClass（MySQL 使用 1Gi PVC）。
+MySQL 与 Redis 使用阿里云仓库 `registry.cn-beijing.aliyuncs.com/docker-june`。BusyBox 以及构建用的 Maven、JDK、Node、Nginx 仍走 DaoCloud。集群还需要有默认 StorageClass（MySQL 使用 1Gi PVC）。
 
 Minikube 先把构建指到集群里的 Docker：
 
 ```powershell
 minikube docker-env | Invoke-Expression
-docker build -t k8s-demo/backend:1.0.0 ./backend
-docker build -t k8s-demo/frontend:1.0.0 ./frontend
+docker build -t registry.cn-beijing.aliyuncs.com/docker-june/backend:1.0.2 ./backend
+docker build -t registry.cn-beijing.aliyuncs.com/docker-june/frontend:1.0.2 ./frontend
+docker push registry.cn-beijing.aliyuncs.com/docker-june/backend:1.0.2
+docker push registry.cn-beijing.aliyuncs.com/docker-june/frontend:1.0.2
 kubectl apply -k k8s
 minikube service frontend -n k8s-demo
 ```
 
-kind 在构建后执行：
-
-```bash
-kind load docker-image k8s-demo/backend:1.0.0
-kind load docker-image k8s-demo/frontend:1.0.0
-```
+集群拉取私有仓库前，在命名空间里创建拉取凭证 `aliyun-registry`（`--docker-username` 和 `--docker-password` 用阿里云镜像仓库的账号）。kind 不需要再 `kind load`，节点会按清单从阿里云拉取。
 
 前端 Service 类型是 LoadBalancer，本机打开 http://localhost:8088 。`k8s/ingress.yaml` 没有放进 Kustomize；这个集群也没有 Ingress Controller，应用它不会单独打开页面。
 
